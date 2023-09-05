@@ -1,0 +1,6 @@
+mixin orders-product(data)
+    li.orders__item
+        h1 Order - # #{data._id}
+        ul.orders__products 
+            each product in data.items 
+                li.orders__products-item #{product.title} (#{product.quantity})

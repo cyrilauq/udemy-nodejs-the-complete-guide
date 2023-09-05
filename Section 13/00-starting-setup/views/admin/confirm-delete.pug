@@ -1,0 +1,12 @@
+extends ../layouts/main-layout.pug 
+
+block style 
+    link(rel="stylesheet", href="/css/forms.css")
+
+block main
+    main 
+        p Are you sure you want to delete the product?
+        form(action="/admin/delete-product", method="post")
+            input(type="submit", name="yes", value="Yes") 
+            input(type="submit", name="no", value="No")
+            input(type="hidden", name="productId", value=prod.id)
