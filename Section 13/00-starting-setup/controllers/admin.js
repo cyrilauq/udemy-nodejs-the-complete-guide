@@ -59,6 +59,7 @@ exports.postEditProduct = (req, res, next) => {
 
   Product.findById(prodId)
     .then(product => {
+        // We just need to update the product info and call the save method, and mongoose will update the product all by itself
         product.title = updatedTitle;
         product.price = updatedPrice;
         product.imageUrl = updatedImageUrl;
