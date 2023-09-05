@@ -9,18 +9,17 @@ exports.getAddProduct = (req, res, next) => {
 };
 
 exports.postAddProduct = (req, res, next) => {
-  const title = req.body.title;
-  const imageUrl = req.body.imageUrl;
-  const price = req.body.price;
-  const description = req.body.description;
-    new Product(
+    const title = req.body.title;
+    const imageUrl = req.body.imageUrl;
+    const price = req.body.price;
+    const description = req.body.description;
+    const product = new Product({
         title,
         price,
-        imageUrl,
         description,
-        null,
-        req.user._id
-    ).save()
+        imageUrl
+    });
+    product.save()
         .then(() => {
             res.redirect('/admin/products');
         })
