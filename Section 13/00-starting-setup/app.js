@@ -2,8 +2,7 @@ const path = require('path');
 
 const express = require('express');
 const bodyParser = require('body-parser');
-
-const { mongoConnect } = require("./util/database");
+const mongoose = require('mongoose');
 
 const User = require('./models/user');
 
@@ -39,8 +38,12 @@ app.use(shopRoutes);
 
 app.use(errorController.get404);
 
-mongoConnect(() => {
-    app.listen(3000, () => {
-        console.log("Server started");
+mongoose.connect('mongodb+srv://cyrilauquier:fxEuaAgIUUds6CMy@cluster0.6036lkk.mongodb.net/shop?retryWrites=true&w=majority')
+    .then(() => {
+        app.listen(3000, () => {
+            console.log("Server started");
+        })
     })
-});
+    .catch(error => {
+        console.log(error);
+    });
