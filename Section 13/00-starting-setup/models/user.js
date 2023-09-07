@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Product = require('../models/product');
 
 const Schema = mongoose.Schema;
 
@@ -15,7 +16,7 @@ const userSchema = new Schema({
         items: [{
             productId: {
                 type: Schema.Types.ObjectId,
-                re: 'Product', // tells that it is related to a particular Product
+                ref: 'Product', // tells that it is related to a particular Product
                 required: true,
             },
             quantity: {
@@ -44,6 +45,11 @@ userSchema.methods.addToCart = function(product) {
     }
     this.cart = updatedCart;
     return this.save();
+}
+
+userSchema.methods.getCart = function() {
+    return this.populate('cart.items.productId')
+        .then(user => user.cart);
 }
 
 module.exports = mongoose.model('User', userSchema);
