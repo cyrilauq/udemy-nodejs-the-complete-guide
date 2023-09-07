@@ -79,12 +79,15 @@ exports.postEditProduct = (req, res, next) => {
 exports.getProducts = (req, res, next) => {
   Product
     .find()
+    // .select('title price -_id') // Let us choose wich field we want to select, by adding '-' in front of a field, we exclude him from the query
+    // .populate('userId', 'name') // Will put into userId, all the information of the user related to the product, the second argument let us choose wich field from the user we will take
     .then(products => {
-      res.render('admin/products', {
-        prods: products,
-        pageTitle: 'Admin Products',
-        path: '/admin/products'
-      });
+        console.log(products);
+        res.render('admin/products', {
+            prods: products,
+            pageTitle: 'Admin Products',
+            path: '/admin/products'
+        });
     })
     .catch(err => console.log(err));
 };
