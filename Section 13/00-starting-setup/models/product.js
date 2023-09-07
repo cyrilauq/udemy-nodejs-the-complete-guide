@@ -18,6 +18,11 @@ const productSchema = new Schema({
     imageUrl: {
         type: String,
         required: true
+    },
+    userId: {
+        type: Schema.Types.ObjectId,
+        ref: 'User', // Will tells that the product is related to a particular user
+        required: true
     }
 });
 
