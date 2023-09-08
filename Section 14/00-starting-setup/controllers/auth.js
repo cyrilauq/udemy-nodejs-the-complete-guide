@@ -26,3 +26,10 @@ exports.postLogin = (req, res, next) => {
         })
         .catch(err => console.log(err));
 };
+
+exports.postLogout = (req, res, next) => {
+    // We'll destroy the session and if we want we can pass a function to the method so we can do something after the destroy of the session
+    req.session.destroy(() => {
+        res.redirect('/');
+    });
+};
