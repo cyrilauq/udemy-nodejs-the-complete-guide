@@ -1,9 +1,9 @@
 exports.getLogin = (req, res, next) => {
-    const isLoggedIn = req.get('Cookie').split(';')[0].split('=')[1];
+    console.log(req.session.userLoggedIn);
     res.render('auth/login', {
         path: '/login',
         pageTitle: 'Login',
-        userAuthenticated: isLoggedIn
+        userAuthenticated: req.session.userLoggedIn
     });
 };
 
@@ -16,6 +16,6 @@ exports.postLogin = (req, res, next) => {
     // We can set where the cookie data will be send juste by addinge "; Domain=" and the domain after our cookie's value
     // We can set a cookie to be used only if the page is secure (using HTTPS) by writing "; Secure" after our cookie's value
     // We can set a cookie to be only use in http request by writing "; HttpOnly" after our cookie's value, it will ensure that we can't access it's value through js or via client codes
-    res.setHeader('Set-Cookie', 'userLoggedIn=true;');
+    req.session.userLoggedIn = true;
     res.redirect('/');
 };

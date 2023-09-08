@@ -3,13 +3,21 @@ const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+
 const session = require('express-session');
+const MongoDBStore = require('connect-mongodb-session')(session);
 
 const User = require('./models/user');
 
 const errorController = require('./controllers/error');
 
+const DB_URI = 'mongodb+srv://cyrilauquier:fxEuaAgIUUds6CMy@cluster0.6036lkk.mongodb.net/shop?retryWrites=true&w=majority';
+
 const app = express();
+const store = new MongoDBStore({
+    uri: DB_URI,
+    collection: 'users_sessions'
+});
 
 app.set('view engine', 'pug');
 app.set('views', 'views');
@@ -25,8 +33,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 // We can configure the session cookie by adding the "cookie" property to the object and give value to its properties too
 app.use(session({
     secret: 'my secret', // Will be used to hache our data
-    reseave: false, // this means that the session will not be save on every request but only if something change in it
-    saveUninitialized: false, // This means that the session will not be save for a request that doesn't need it
+    resave: false, // this means that the session will not be save on every request but only if something change in it
+    saveUninitialized: false, // This means that the session will not be save for a request that doesn't need it,
+    store: store
 }));
 
 app.use((req, res, next) => {
@@ -44,7 +53,7 @@ app.use(authRoutes);
 
 app.use(errorController.get404);
 
-mongoose.connect('mongodb+srv://cyrilauquier:fxEuaAgIUUds6CMy@cluster0.6036lkk.mongodb.net/shop?retryWrites=true&w=majority')
+mongoose.connect(DB_URI)
     .then(() => {
         User.findOne()
             .then(user => {
