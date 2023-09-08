@@ -2,7 +2,7 @@ header.main-header
     nav.main-header__nav
         ul.main-header__item-list
             li.main-header__item
-                a(href="/", class=(path === '/shop' ? 'active' : '')) Shop
+                a(href="/", class=(path === '/' ? 'active' : '')) Shop
             li.main-header__item
                 a(href="/products", class=(path === '/products' ? 'active' : '')) Products
             li.main-header__item
@@ -10,6 +10,9 @@ header.main-header
             li.main-header__item
                 a(href="/orders", class=(path === '/orders' ? 'active' : '')) Orders
             li.main-header__item
-                a(href="/admin/add-product", class=(path === '/admin/add-product' ? 'active' : '')) Add Product
-            li.main-header__item
-                a(href="/admin/products", class=(path === '/admin/products' ? 'active' : '')) Admin products
+            //-     a(href="/admin/add-product", class=(path === '/admin/add-product' ? 'active' : '')) Add Product
+            //- li.main-header__item
+            //-     a(href="/admin/products", class=(path === '/admin/products' ? 'active' : '')) Admin products
+        ul.main-header__item-list 
+            li.main-header__item 
+                a(href="/login", class=(path === '/login' ? 'active' : '')) Login  
