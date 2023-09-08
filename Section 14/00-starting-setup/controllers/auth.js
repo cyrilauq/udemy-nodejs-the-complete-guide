@@ -20,8 +20,8 @@ exports.postLogin = (req, res, next) => {
     // We can set a cookie to be only use in http request by writing "; HttpOnly" after our cookie's value, it will ensure that we can't access it's value through js or via client codes
     User.findById("64f9a4caa0b3495535d49017")
         .then(user => {
-            req.session.user = user;
             req.session.userLoggedIn = true;
+            req.session.user = user;
             res.redirect('/');
         })
         .catch(err => console.log(err));

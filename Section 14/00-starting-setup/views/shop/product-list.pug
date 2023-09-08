@@ -19,8 +19,9 @@ block main
                             p.product__description #{prod.description}
                         div.card__actions 
                             a.btn(href="/products/"+prod._id) Details 
-                            form(action="/cart", method="post")
-                                button.btn(type="submit") Add to Cart
-                                input(type="hidden", name="productId", value=prod._id) 
+                            if userAuthenticated
+                                form(action="/cart", method="post")
+                                    button.btn(type="submit") Add to Cart
+                                    input(type="hidden", name="productId", value=prod._id) 
         else 
             h1 No Products Found!
