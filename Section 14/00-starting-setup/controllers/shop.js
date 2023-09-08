@@ -47,8 +47,7 @@ exports.getIndex = (req, res, next) => {
 };
 
 exports.getCart = (req, res, next) => {
-    User.findById(req.session.user._id)
-        .then(user => user.getCart())
+    req.user.getCart()
         .then(cart => {
             console.log(cart.items);
             res.render('shop/cart', {
@@ -66,10 +65,7 @@ exports.getCart = (req, res, next) => {
 exports.postCart = (req, res, next) => {
     const prodId = req.body.productId;
     Product.findById(prodId)
-        .then(product => {
-            return User.findById(req.session.user._id)
-                .then(user => user.addToCart(product))
-        })
+        .then(product => req.user.addToCart(product))
         .then(() => {
             res.redirect('/cart');
         })
@@ -80,7 +76,7 @@ exports.postCart = (req, res, next) => {
 
 exports.postCartDeleteProduct = (req, res, next) => {
     const prodId = req.body.productId;
-    new User().init(req.session.user).removeFromCart(prodId)
+    req.user.removeFromCart(prodId)
         .then(() => {
             res.redirect('/cart');
         })
@@ -90,7 +86,7 @@ exports.postCartDeleteProduct = (req, res, next) => {
 };
 
 exports.postOrder = (req, res, next) => {
-    const user = new User().init(req.session.user);
+    const user = req.user;
     user.getCart()
         .then(cart => {
             const order = new Order({
@@ -121,13 +117,14 @@ exports.postOrder = (req, res, next) => {
 
 exports.getOrders = (req, res, next) => {
     Order.find({
-        "user._id": req.session.user._id
+        "user._id": req.user._id
     })
     .then(orders => {
         res.render('shop/orders', {
             path: '/orders',
             pageTitle: 'Your Orders',
-            orders: orders
+            orders: orders,
+            userAuthenticated: req.session.userLoggedIn
         });
     })
     .catch(err => console.log(err));
