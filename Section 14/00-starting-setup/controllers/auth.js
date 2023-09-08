@@ -47,5 +47,29 @@ exports.getSignup = (req, res, next) => {
 };
 
 exports.postSignup = (req, res, next) => {
-    
+    const password = req.body.password;
+    const email = req.body.email;
+    const confirmPassword = req.body.confirmPassword;
+    const name = req.body.name;
+    User.findOne({
+        email: email
+    })
+        .then(user => {
+            if(user) {
+                return res.redirect('/signup');
+            }
+            const newUser = new User({
+                email: email,
+                password: password,
+                name: name,
+                cart: []
+            });
+            return newUser.save();
+        })
+        .then(result => {
+            res.redirect('/login');
+        })
+        .catch(error => {
+            console.log(error);
+        })
 };

@@ -8,6 +8,9 @@ block main
     main 
         form.login-form(action="/signup", method="post") 
             .form-control 
+                label(for="name") Name 
+                input#name(type="name", name="name")
+            .form-control 
                 label(for="email") E-Mail 
                 input#email(type="email", name="email")
             .form-control 
@@ -15,5 +18,5 @@ block main
                 input#password(type="password", name="password")
             .form-control 
                 label(for="confirmPassword") Confirm password 
-                input#confirmPassword(type="confirmPassword", name="confirmPassword")
+                input#confirmPassword(type="password", name="confirmPassword")
             button.btn(type="submit") Signup
