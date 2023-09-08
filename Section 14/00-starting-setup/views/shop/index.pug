@@ -19,8 +19,8 @@ block main
                             h2.product__price #{prod.price}
                             p.product__description #{prod.description}
                         div.card__actions 
+                            a.btn(href="/products/"+prod._id) Details 
                             if userAuthenticated
                                 +add-to-cart(prod)
-                            a.btn(href="/products/"+prod._id) See product
         else 
             <h1>No Products Found!
