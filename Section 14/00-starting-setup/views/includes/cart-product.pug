@@ -1,0 +1,7 @@
+mixin cart-product(data)
+    li.cart__item
+        h1 #{data.productId.title}
+        h2 Quantity: #{data.quantity}
+        form(action="/cart-delete-item", method="post")
+            input(type="hidden", name="productId", value=data.productId._id)
+            button.btn.danger(type="submit") Delete

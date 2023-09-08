@@ -1,0 +1,15 @@
+extends ../layouts/main-layout.pug 
+include ../includes/orders-product
+
+block style 
+    link(rel="stylesheet", href="/css/product.css")
+    link(rel="stylesheet" href="/css/orders.css")
+
+block main
+    main 
+        if orders.length > 0
+            ul.orders 
+                each order in orders
+                    +orders-product(order) 
+        else 
+            h1 No orders made yet
