@@ -12,6 +12,35 @@ exports.getLogin = (req, res, next) => {
 };
 
 exports.postLogin = (req, res, next) => {
+    const email = req.body.email;
+    const password = req.body.password;
+    User.findOne({
+        email: email
+    })
+        .then(user => {
+            if(!user) {
+                return res.redirect('/login');
+            }
+            bcrypt.compare(password, user.password)
+                .then(doMatch => {
+                    if(doMatch) {
+                        req.session.userLoggedIn = true;
+                        req.session.user = user;
+                        // We call save mthod because, before redirecting the user we need to be sure that the information are in the session
+                        return req.session.save(err => {
+                            console.log(err);
+                            res.redirect('/');
+                        });
+                    }
+                    res.redirect('/login');
+                })
+                .catch(error => {
+                    console.log(error);
+                    res.redirect('/login');
+                });
+        })
+        .catch(err => console.log(err));
+
     // To set a cookie we'll set a header, by using setHeader
     // It takes the header name's and it's value
     // The Set-Cookie name, is a reserved name wich means it has already a default behavior, is used for setting cookies 
@@ -20,17 +49,17 @@ exports.postLogin = (req, res, next) => {
     // We can set where the cookie data will be send juste by addinge "; Domain=" and the domain after our cookie's value
     // We can set a cookie to be used only if the page is secure (using HTTPS) by writing "; Secure" after our cookie's value
     // We can set a cookie to be only use in http request by writing "; HttpOnly" after our cookie's value, it will ensure that we can't access it's value through js or via client codes
-    User.findById("64f9a4caa0b3495535d49017")
-        .then(user => {
-            req.session.userLoggedIn = true;
-            req.session.user = user;
-            // We call save mthod because, before redirecting the user we need to be sure that the information are in the session
-            req.session.save(err => {
-                console.log(err);
-                res.redirect('/');
-            })
-        })
-        .catch(err => console.log(err));
+    // User.findById("64f9a4caa0b3495535d49017")
+    //     .then(user => {
+    //         req.session.userLoggedIn = true;
+    //         req.session.user = user;
+    //         // We call save mthod because, before redirecting the user we need to be sure that the information are in the session
+    //         req.session.save(err => {
+    //             console.log(err);
+    //             res.redirect('/');
+    //         })
+    //     })
+    //     .catch(err => console.log(err));
 };
 
 exports.postLogout = (req, res, next) => {
