@@ -31,6 +31,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // We'll initialize the session and pass a js object to configure the session
 // We can configure the session cookie by adding the "cookie" property to the object and give value to its properties too
+// By giving a store we tell express where to store the session
 app.use(session({
     secret: 'my secret', // Will be used to hache our data
     resave: false, // this means that the session will not be save on every request but only if something change in it
