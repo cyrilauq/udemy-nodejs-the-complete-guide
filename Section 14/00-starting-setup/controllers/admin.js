@@ -4,7 +4,8 @@ exports.getAddProduct = (req, res, next) => {
   res.render('admin/edit-product', {
     pageTitle: 'Add Product',
     path: '/admin/add-product',
-    editing: false
+    editing: false,
+    userAuthenticated: req.session.userLoggedIn
   });
 };
 
@@ -18,7 +19,7 @@ exports.postAddProduct = (req, res, next) => {
         price,
         description,
         imageUrl,
-        userId: req.user // By doing that, mongoose will take all by itself the id of the user
+        userId: req.session.user._id
     });
     product.save()
         .then(() => {
@@ -45,7 +46,8 @@ exports.getEditProduct = (req, res, next) => {
                 pageTitle: 'Edit Product',
                 path: '/admin/edit-product',
                 editing: editMode,
-                prod: product
+                prod: product,
+                userAuthenticated: req.session.userLoggedIn
             });
         })
         .catch(err => console.log(err));
@@ -86,7 +88,8 @@ exports.getProducts = (req, res, next) => {
         res.render('admin/products', {
             prods: products,
             pageTitle: 'Admin Products',
-            path: '/admin/products'
+            path: '/admin/products',
+            userAuthenticated: req.session.userLoggedIn
         });
     })
     .catch(err => console.log(err));
