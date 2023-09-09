@@ -1,9 +1,6 @@
 const Product = require('../models/product');
 
 exports.getAddProduct = (req, res, next) => {
-    if(!req.session.userLoggedIn) {
-        return res.status(403).render('403');
-    }
     res.render('admin/edit-product', {
         pageTitle: 'Add Product',
         path: '/admin/add-product',
