@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
+const csrf = require('csurf');
 
 const User = require('./models/user');
 
@@ -18,6 +19,7 @@ const store = new MongoDBStore({
     uri: DB_URI,
     collection: 'users_sessions'
 });
+const csrfProtection = csrf();
 
 app.set('view engine', 'pug');
 app.set('views', 'views');
@@ -39,6 +41,8 @@ app.use(session({
     saveUninitialized: false, // This means that the session will not be save for a request that doesn't need it,
     store: store
 }));
+// We'll use the csrf protection after the session initialisation cause it will need id.
+app.use(csrfProtection);
 
 app.use((req, res, next) => {
     if(!req.session.user) {

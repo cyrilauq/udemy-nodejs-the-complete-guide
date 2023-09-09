@@ -18,6 +18,7 @@ header.main-header
             if userAuthenticated
                 li.main-header__item 
                     form(action="/logout", method="post") 
+                        input(type="hidden", name="_csrf", value=csrfToken)
                         button(type="submit") Logout
             else
                 li.main-header__item 
