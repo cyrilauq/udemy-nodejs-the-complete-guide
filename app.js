@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
-const csrf = require('csurf');
+const { csrfSync } = require('csrf-sync');
 
 const User = require('./models/user');
 
@@ -19,7 +19,20 @@ const store = new MongoDBStore({
     uri: DB_URI,
     collection: 'users_sessions'
 });
-const csrfProtection = csrf();
+
+const { csrfSynchronisedProtection } = csrfSync({
+    ignoredMethods: ["GET", "HEAD", "OPTIONS"],
+    getTokenFromState: (req) => {
+      return req.session.csrfToken;
+    }, // Used to retrieve the token from state.
+    getTokenFromRequest: (req) =>  {
+      return req.body.csrfToken;
+    }, // Used to retrieve the token submitted by the request from headers
+    storeTokenInState: (req, token) => {
+      req.session.csrfToken = token;
+    }, // Used to store the token in state.
+    size: 128, // The size of the generated tokens in bits
+});
 
 app.set('view engine', 'pug');
 app.set('views', 'views');
@@ -41,8 +54,30 @@ app.use(session({
     saveUninitialized: false, // This means that the session will not be save for a request that doesn't need it,
     store: store
 }));
+
 // We'll use the csrf protection after the session initialisation cause it will need id.
-app.use(csrfProtection);
+app.use(csrfSynchronisedProtection);
+
+app.use((req, res, next)=> {
+    // Check if the request is for an image based on the Content-Type header
+    const contentType = req.get('Content-Type');
+
+    if (contentType && contentType.startsWith('image/')) {
+        // If the request is for an image, skip the middleware and move to the next middleware/route
+        return next();
+    }
+    // Check if the request path is for an image (you can adjust this check based on your image file extensions)
+    if (req.path.endsWith('.jpg') || req.path.endsWith('.png') || req.path.endsWith('.jpeg') || req.path.endsWith('.gif')) {
+        // If the request is for an image, skip the middleware and move to the next middleware/route
+        return next();
+    }
+    // We tell express that we need these data in every views we render
+    // To do so, we use "res.locals"
+    res.locals.userAuthenticated = req.session.userLoggedIn;
+    res.locals.csrfToken = req.csrfToken(true);
+    console.log(typeof res.locals.csrfToken);
+    next();
+});
 
 app.use((req, res, next) => {
     if(!req.session.user) {
@@ -56,14 +91,6 @@ app.use((req, res, next) => {
         .catch(error => {
             console.log(error);
         });
-});
-
-app.use((req, res, next)=> {
-    // We tell express that we need these data in every views we render
-    // To do so, we use "res.locals"
-    res.locals.userAuthenticated = req.session.userLoggedIn;
-    res.locals.csrfToken = req.csrfToken();
-    next();
 });
 
 app.use('/admin', adminRoutes);

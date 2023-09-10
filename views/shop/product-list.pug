@@ -21,7 +21,7 @@ block main
                             a.btn(href="/products/"+prod._id) Details 
                             if userAuthenticated
                                 form(action="/cart", method="post")
-                                    input(type="hidden", name="_csrf", value=csrfToken)
+                                    +csrf-input(prod) 
                                     button.btn(type="submit") Add to Cart
                                     input(type="hidden", name="productId", value=prod._id) 
         else 

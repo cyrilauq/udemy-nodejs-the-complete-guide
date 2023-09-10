@@ -20,7 +20,7 @@ block main
                         div.card__actions 
                             a.btn(href="/admin/edit-product/"+prod._id+"?edit=true") Edit
                             form(action="/admin/delete-product", method="POST")
-                                input(type="hidden", name="_csrf", value=csrfToken)
+                                +csrf-input() 
                                 input(type="hidden", name="productId", value=prod._id)
                                 button.btn(type="submit") Delete 
         else 

@@ -24,8 +24,7 @@ exports.getProduct = (req, res, next) => {
             res.render('shop/product-detail', {
                 prod: product,
                 pageTitle: product.title,
-                path: '/products',
-                userAuthenticated: req.session.userLoggedIn
+                path: '/products'
             });
         })
         .catch(err => console.log(err));
