@@ -19,4 +19,5 @@ block main
             .form-control 
                 label(for="confirmPassword") Confirm password 
                 input#confirmPassword(type="password", name="confirmPassword")
+            input(type="hidden", name="_csrf", value=csrfToken)
             button.btn(type="submit") Signup

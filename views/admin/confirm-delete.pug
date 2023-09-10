@@ -7,6 +7,7 @@ block main
     main 
         p Are you sure you want to delete the product?
         form(action="/admin/delete-product", method="post")
+            input(type="hidden", name="_csrf", value=csrfToken)
             input(type="submit", name="yes", value="Yes") 
             input(type="submit", name="no", value="No")
             input(type="hidden", name="productId", value=prod.id)

@@ -58,6 +58,14 @@ app.use((req, res, next) => {
         });
 });
 
+app.use((req, res, next)=> {
+    // We tell express that we need these data in every views we render
+    // To do so, we use "res.locals"
+    res.locals.userAuthenticated = req.session.userLoggedIn;
+    res.locals.csrfToken = req.csrfToken();
+    next();
+});
+
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 app.use(authRoutes);
