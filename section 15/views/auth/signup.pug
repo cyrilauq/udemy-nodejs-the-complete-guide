@@ -6,6 +6,8 @@ block style
 
 block main
     main 
+        if(errorMessage)
+            div.user-message.user-message--error #{errorMessage}
         form.login-form(action="/signup", method="post") 
             .form-control 
                 label(for="name") Name 
