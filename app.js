@@ -7,10 +7,9 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const { csrfSync } = require('csrf-sync');
+const flash = require('connect-flash');
 
 const User = require('./models/user');
-
-const errorController = require('./controllers/error');
 
 const DB_URI = 'mongodb+srv://cyrilauquier:fxEuaAgIUUds6CMy@cluster0.6036lkk.mongodb.net/shop?retryWrites=true&w=majority';
 
@@ -57,6 +56,8 @@ app.use(session({
 
 // We'll use the csrf protection after the session initialisation cause it will need id.
 app.use(csrfSynchronisedProtection);
+
+app.use(flash());
 
 app.use((req, res, next)=> {
     // Check if the request is for an image based on the Content-Type header

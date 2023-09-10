@@ -51,8 +51,7 @@ exports.getCart = (req, res, next) => {
             res.render('shop/cart', {
                 path: '/cart',
                 pageTitle: 'Your Cart',
-                prods: cart.items,
-                userAuthenticated: req.session.userLoggedIn
+                prods: cart.items
             });
         })
         .catch(error => {
@@ -121,8 +120,7 @@ exports.getOrders = (req, res, next) => {
         res.render('shop/orders', {
             path: '/orders',
             pageTitle: 'Your Orders',
-            orders: orders,
-            userAuthenticated: req.session.userLoggedIn
+            orders: orders
         });
     })
     .catch(err => console.log(err));

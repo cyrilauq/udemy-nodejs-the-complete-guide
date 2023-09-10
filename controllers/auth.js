@@ -2,12 +2,16 @@ const bcrypt = require('bcryptjs');
 
 const User = require('../models/user');
 
+// To render an error message on the forms we use flash
+// To give it information we need to use the req.flash() method, it takes two arguments, the first is the "key" of the stored item and the second is the item we want to store
+// To retrieve the message we'll use req.flash() method, but with one arguments(the key of the item we want to retrieve) and it'll give us what stored with this key
+
 exports.getLogin = (req, res, next) => {
     console.log(req.session.userLoggedIn);
     res.render('auth/login', {
         path: '/login',
         pageTitle: 'Login',
-        userAuthenticated: req.session.userLoggedIn
+        errorMessage: req.flash('error')
     });
 };
 
@@ -19,6 +23,7 @@ exports.postLogin = (req, res, next) => {
     })
         .then(user => {
             if(!user) {
+                req.flash('error', 'Invalide email.');
                 return res.redirect('/login');
             }
             bcrypt.compare(password, user.password)
@@ -32,6 +37,7 @@ exports.postLogin = (req, res, next) => {
                             res.redirect('/');
                         });
                     }
+                    req.flash('error', 'Invalide password.');
                     res.redirect('/login');
                 })
                 .catch(error => {
@@ -72,8 +78,7 @@ exports.postLogout = (req, res, next) => {
 exports.getSignup = (req, res, next) => {
     res.render('auth/signup', {
         path: '/signup',
-        pageTitle: 'Signup',
-        userAuthenticated: req.session.userLoggedIn        
+        pageTitle: 'Signup'
     })
 };
 
