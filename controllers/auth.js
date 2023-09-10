@@ -7,11 +7,11 @@ const User = require('../models/user');
 // To retrieve the message we'll use req.flash() method, but with one arguments(the key of the item we want to retrieve) and it'll give us what stored with this key
 
 exports.getLogin = (req, res, next) => {
-    console.log(req.session.userLoggedIn);
+    const message = req.flash('error');
     res.render('auth/login', {
         path: '/login',
         pageTitle: 'Login',
-        errorMessage: req.flash('error')
+        errorMessage: message.length > 0 ? message[0] : null
     });
 };
 
