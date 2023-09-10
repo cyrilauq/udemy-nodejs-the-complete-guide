@@ -6,8 +6,8 @@ block style
 
 block main
     main 
-        if(errorMessage)
-            div #{errorMessage}
+        if(errorMessage.length > 0)
+            div.user-message.user-message--error #{errorMessage}
         form.login-form(action="/login", method="post")
             div.form-control
                 label(for="email") E-mail 
