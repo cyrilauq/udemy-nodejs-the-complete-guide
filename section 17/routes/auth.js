@@ -17,4 +17,8 @@ routes.get('/reset-pwd', authController.getResetPassword);
 
 routes.post('/reset-pwd', authController.postResetPassword);
 
+routes.get('/reset-pwd/:token', authController.getNewPassword);
+
+routes.post('/new-pwd', authController.postNewPassword);
+
 module.exports = routes;

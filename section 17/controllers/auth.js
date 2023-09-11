@@ -169,7 +169,7 @@ exports.postResetPassword = (req, res, next) => {
                             html: `
                             <h1>Password reset</h1>
                             <p>You requested a password reset</p>
-                            <p>Click this <a href="http://localhost:3000/reset/${token}">link</a> to set a new password</p>
+                            <p>Click this <a href="http://localhost:3000/reset-pwd/${token}">link</a> to set a new password</p>
                             <p>(If you didn't requested it ignore the mail)</p>
                             `
                         };
@@ -187,4 +187,34 @@ exports.postResetPassword = (req, res, next) => {
                 console.log(error);
             });
     });
-}
+};
+
+exports.getNewPassword = (req, res, next) => {
+    const token = req.params.token;
+
+    // We'll search after a user for the given token and check if the token is valid.
+    User.findOne({
+        resetToken: token,
+        resetTokenExpiration: {
+            $gt: Date.now() // With "$gt" will verify that the field it greater than the value 
+        }
+    })
+        .then(user => {
+            if(!user) {
+                req.flash('error', 'Invalid token.')
+                return res.redirect('/reset-pwd');
+            }
+            const message = req.flash('error');
+            res.render('auth/new-pwd', {
+                path: '/reset-pwd',
+                pageTitle: 'Update password',
+                errorMessage: message.length > 0 ? message[0] : null,
+                userId: user._id.toString()
+            });
+        })
+        .catch();
+};
+
+exports.postNewPassword = (req, res, next) => {
+    
+};

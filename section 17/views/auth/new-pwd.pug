@@ -1,0 +1,20 @@
+extends ../layouts/main-layout.pug 
+
+block style 
+    link(rel="stylesheet", href="/css/forms.css")
+    link(rel="stylesheet", href="/css/auth.css")
+
+block main
+    main 
+        if(errorMessage)
+            div.user-message.user-message--error #{errorMessage}
+        form.login-form(action="/new-pwd", method="post")
+            div.form-control
+                label(for="newPassword") New password 
+                input#newPassword(type="newPassword", name="newPassword")
+            div.form-control
+                label(for="newPasswordConfirmation") Confirmation new password 
+                input#newPasswordConfirmation(type="newPasswordConfirmation", name="newPasswordConfirmation")
+            +csrf-input() 
+            input(type="hidden", name="userId", value=userId) 
+            button.btn(type="submit") Update password
