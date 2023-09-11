@@ -48,4 +48,5 @@ It will look like this:
 ```sh
 APP_PASSWORD = 'the-generated-password-you-previously-copied'
 MAIL_SENDER = 'you-mail'
+TOKEN_BITS_COUNT = 42 (the number you want)
 ```

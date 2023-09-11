@@ -1,5 +1,6 @@
 require('dotenv').config();
 
+const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
 
@@ -126,7 +127,7 @@ exports.postSignup = (req, res, next) => {
         })
         .catch(error => {
             console.log(error);
-        })
+        });
 };
 
 exports.getResetPassword = (req, res, next) => {
@@ -139,5 +140,51 @@ exports.getResetPassword = (req, res, next) => {
 }
 
 exports.postResetPassword = (req, res, next) => {
-    
+    // To make it more secure we'll send a mail to reset the password to the user and in the provided link we'll have a token.
+    // The token will be generated with TOKEN_BITS_COUNT bits.
+    // the method randomBytes has a callback with to argument, an error (with eventually an error message) and a buffer (will contains the random bytes)
+    crypto.randomBytes(parseInt(envConfig.TOKEN_BITS_COUNT), (err, buffer) => {
+        if(err) {
+            console.log(err);
+            return res.redirect('/reset-pwd');
+        }
+        const token = buffer.toString('hex');
+        User.findOne({
+            email: req.body.email
+        })
+            .then(user => {
+                if(!user) {
+                    req.flash('error', 'No user found for the given mail.')
+                    return res.redirect('/reset-pwd');
+                }
+                user.resetToken = token;
+                user.resetTokenExpiration = Date.now() + (100 * 60 * 60);
+                return user.save()
+                    .then(user => {                        
+                        res.redirect('/');
+                        var mailOptions = {
+                            from: 'shop@node-complete.com',
+                            to: user.email,
+                            subject: 'Password reset',
+                            html: `
+                            <h1>Password reset</h1>
+                            <p>You requested a password reset</p>
+                            <p>Click this <a href="http://localhost:3000/reset/${token}">link</a> to set a new password</p>
+                            <p>(If you didn't requested it ignore the mail)</p>
+                            `
+                        };
+                        
+                        transporter.sendMail(mailOptions, function(error, info){
+                            if (error) {
+                                console.log(error);
+                            } else {
+                                console.log('Email sent: ' + info.response);
+                            }
+                        });
+                    });
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    });
 }
