@@ -13,4 +13,8 @@ routes.get('/signup', authController.getSignup);
 
 routes.post('/signup', authController.postSignup);
 
+routes.get('/reset-pwd', authController.getResetPassword);
+
+routes.post('/reset-pwd', authController.postResetPassword);
+
 module.exports = routes;

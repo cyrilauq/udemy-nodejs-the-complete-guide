@@ -8,14 +8,9 @@ block main
     main 
         if(errorMessage)
             div.user-message.user-message--error #{errorMessage}
-        form.login-form(action="/login", method="post")
+        form.login-form(action="/reset-pwd", method="post")
             div.form-control
                 label(for="email") E-mail 
                 input#email(type="email", name="email")
-            div.form-control
-                label(for="password") Password 
-                input#password(type="password", name="password")
             +csrf-input() 
-            button.btn(type="submit") Login 
-        div.centered 
-            a(href="/reset-pwd") Reset password 
+            button.btn(type="submit") Reset password
