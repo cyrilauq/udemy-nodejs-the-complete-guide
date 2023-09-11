@@ -7,6 +7,7 @@ const nodemailer = require('nodemailer');
 const envConfig = process.env;
 
 const sender = `${envConfig.MAIL_SENDER}`;
+const HASH_SALT = 12;
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -93,7 +94,7 @@ exports.postSignup = (req, res, next) => {
                 req.flash('error', 'User already exists.');
                 return res.redirect('/signup');
             }
-            return bcrypt.hash(password, 12)
+            return bcrypt.hash(password, HASH_SALT)
                 .then(hashedPasseword => {
                     const newUser = new User({
                         email: email,
@@ -209,12 +210,63 @@ exports.getNewPassword = (req, res, next) => {
                 path: '/reset-pwd',
                 pageTitle: 'Update password',
                 errorMessage: message.length > 0 ? message[0] : null,
-                userId: user._id.toString()
+                userId: user._id.toString(),
+                passwordToken: token
             });
         })
         .catch();
 };
 
 exports.postNewPassword = (req, res, next) => {
-    
+    const newPassword = req.body.newPassword;
+    const newPasswordConfirmation = req.body.newPasswordConfirmation;
+    const userId = req.body.userId;
+    const passwordToken = req.body.passwordToken;
+    let resetUser;
+
+    User.findOne({
+        resetToken: passwordToken,
+        resetTokenExpiration: {
+            $gt: Date.now() // With "$gt" will verify that the field it greater than the value 
+        },
+        _id: userId
+    })
+        .then(user => {
+            if(!user) {
+                req.flash('error', 'Invalid token.')
+                return res.redirect('/reset-pwd');
+            }
+            resetUser = user;
+            return bcrypt.hash(newPassword, HASH_SALT);
+        })
+        .then(hashedPassword => {
+            resetUser.password = hashedPassword;
+            resetUser.resetToken = undefined;
+            resetUser.resetTokenExpiration = undefined;
+            resetUser.save();
+        })
+        .then(result => {
+            res.redirect('/login');
+            var mailOptions = {
+                from: 'shop@node-complete.com',
+                to: resetUser.email,
+                subject: 'Password reset',
+                html: `
+                <h1>Password reset</h1>
+                <p>Congratulation, you successfully reset your password!!!</p>
+                <p>(If you didn't reset your password please change it now)</p>
+                `
+            };
+            
+            transporter.sendMail(mailOptions, function(error, info){
+                if (error) {
+                    console.log(error);
+                } else {
+                    console.log('Email sent: ' + info.response);
+                }
+            });
+        })
+        .catch(error => {
+            console.log(error);
+        });
 };
