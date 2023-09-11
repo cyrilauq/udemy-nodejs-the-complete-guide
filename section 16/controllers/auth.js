@@ -1,4 +1,19 @@
+require('dotenv').config();
+
 const bcrypt = require('bcryptjs');
+const nodemailer = require('nodemailer');
+
+const envConfig = process.env;
+
+const sender = `${envConfig.MAIL_SENDER}`;
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: sender,
+    pass: `${envConfig.APP_PASSWORD}`
+  }
+});
 
 const User = require('../models/user');
 
@@ -109,6 +124,24 @@ exports.postSignup = (req, res, next) => {
                 })
                 .then(result => {
                     res.redirect('/login');
+
+                    var mailOptions = {
+                        from: 'shop@node-complete.com',
+                        to: email,
+                        subject: 'Welcom to our shop!',
+                        text: 'You successfully signed up!'
+                    };
+                    
+                    transporter.sendMail(mailOptions, function(error, info){
+                        if (error) {
+                            console.log(error);
+                        } else {
+                            console.log('Email sent: ' + info.response);
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.log(error);
                 });
         })
         .catch(error => {
