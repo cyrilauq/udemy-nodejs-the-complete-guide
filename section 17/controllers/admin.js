@@ -62,7 +62,9 @@ exports.postEditProduct = (req, res, next) => {
 
   Product.findById(prodId)
     .then(product => {
-        if(product.userId !== req.user._id) {
+        // We're need to apply the toString() method to both, because without it it will not work.
+        // Because the type of the two data is a special one and comes from mongodb 
+        if(product.userId.toString() !== req.user._id.toString()) {
             return res.status(401).redirect('/');
         }
         // We just need to update the product info and call the save method, and mongoose will update the product all by itself
