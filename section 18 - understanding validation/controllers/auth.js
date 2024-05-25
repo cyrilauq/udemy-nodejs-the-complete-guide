@@ -34,37 +34,27 @@ exports.getLogin = (req, res, next) => {
     });
 };
 
-exports.postLogin = (req, res, next) => {
+exports.postLogin = async (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
-    User.findOne({
-        email: email
-    })
-        .then(user => {
-            if(!user) {
-                req.flash('error', 'Invalide email.');
-                return res.redirect('/login');
-            }
-            bcrypt.compare(password, user.password)
-                .then(doMatch => {
-                    if(doMatch) {
-                        req.session.userLoggedIn = true;
-                        req.session.user = user;
-                        // We call save mthod because, before redirecting the user we need to be sure that the information are in the session
-                        return req.session.save(err => {
-                            console.log(err);
-                            res.redirect('/');
-                        });
-                    }
-                    req.flash('error', 'Invalide password.');
-                    res.redirect('/login');
-                })
-                .catch(error => {
-                    console.log(error);
-                    res.redirect('/login');
-                });
-        })
-        .catch(err => console.log(err));
+    const errors = validationResult(req);
+    const user = await User.findOne({ email: email });
+    if(!errors.isEmpty()) {
+        return res
+            .status(422)
+            .render('auth/login', {
+                path: '/login',
+                pageTitle: 'Login',
+                errorMessage: errors.array()[0].msg
+            }); // returns response that tells that the validation failed
+    }
+    req.session.userLoggedIn = true;
+    req.session.user = user;
+    // We call save mthod because, before redirecting the user we need to be sure that the information are in the session
+    return req.session.save(err => {
+        console.log(err);
+        res.redirect('/');
+    });
 };
 
 exports.postLogout = (req, res, next) => {
@@ -86,7 +76,6 @@ exports.getSignup = (req, res, next) => {
 exports.postSignup = (req, res, next) => {
     const password = req.body.password;
     const email = req.body.email;
-    const confirmPassword = req.body.confirmPassword;
     const name = req.body.name;
     const errors = validationResult(req);
     if(!errors.isEmpty()) {
@@ -98,45 +87,33 @@ exports.postSignup = (req, res, next) => {
                 errorMessage: errors.array()[0].msg
             }); // returns response that tells that the validation failed
     }
-    User.findOne({
-        email: email
-    })
-        .then(user => {
-            if(user) {
-                req.flash('error', 'User already exists.');
-                return res.redirect('/signup');
-            }
-            return bcrypt.hash(password, HASH_SALT)
-                .then(hashedPasseword => {
-                    const newUser = new User({
-                        email: email,
-                        password: hashedPasseword,
-                        name: name,
-                        cart: []
-                    });
-                    return newUser.save();
-                })
-                .then(result => {
-                    res.redirect('/login');
+    bcrypt.hash(password, HASH_SALT)
+        .then(hashedPasseword => {
+            const newUser = new User({
+                email: email,
+                password: hashedPasseword,
+                name: name,
+                cart: []
+            });
+            return newUser.save();
+        })
+        .then(result => {
+            res.redirect('/login');
 
-                    var mailOptions = {
-                        from: 'shop@node-complete.com',
-                        to: email,
-                        subject: 'Welcom to our shop!',
-                        text: 'You successfully signed up!'
-                    };
-                    
-                    transporter.sendMail(mailOptions, function(error, info){
-                        if (error) {
-                            console.log(error);
-                        } else {
-                            console.log('Email sent: ' + info.response);
-                        }
-                    });
-                })
-                .catch(error => {
+            var mailOptions = {
+                from: 'shop@node-complete.com',
+                to: email,
+                subject: 'Welcom to our shop!',
+                text: 'You successfully signed up!'
+            };
+            
+            transporter.sendMail(mailOptions, function(error, info){
+                if (error) {
                     console.log(error);
-                });
+                } else {
+                    console.log('Email sent: ' + info.response);
+                }
+            });
         })
         .catch(error => {
             console.log(error);
