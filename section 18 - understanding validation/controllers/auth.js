@@ -69,7 +69,14 @@ exports.getSignup = (req, res, next) => {
     res.render('auth/signup', {
         path: '/signup',
         pageTitle: 'Signup',
-        errorMessage: message.length > 0 ? message[0] : null
+        errorMessage: message.length > 0 ? message[0] : null,
+        oldInput: {
+            email: "",
+            password: "",
+            confirmPassword: "",
+            name: ""
+        },
+        validationErrors: []
     })
 };
 
@@ -79,12 +86,20 @@ exports.postSignup = (req, res, next) => {
     const name = req.body.name;
     const errors = validationResult(req);
     if(!errors.isEmpty()) {
+        console.log(errors.array().map(e => e.path));
         return res
             .status(422)
             .render('auth/signup', {
                 path: '/signup',
                 pageTitle: 'Signup',
-                errorMessage: errors.array()[0].msg
+                errorMessage: errors.array()[0].msg,
+                oldInput: {
+                    email: email,
+                    password: password,
+                    confirmPassword: req.body.confirmPassword,
+                    name: name
+                },
+                validationErrors: errors.array().map(e => e.path)
             }); // returns response that tells that the validation failed
     }
     bcrypt.hash(password, HASH_SALT)

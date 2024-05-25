@@ -11,15 +11,15 @@ block main
         form.login-form(action="/signup", method="post") 
             .form-control 
                 label(for="name") Name 
-                input#name(type="name", name="name")
+                input#name(type="name", name="name", value=oldInput.name, class=validationErrors.find(e => e === 'name') ? "invalid" : "")
             .form-control 
                 label(for="email") E-Mail 
-                input#email(type="email", name="email")
+                input#email(type="email", name="email", value=oldInput.email, class=(validationErrors.find(e => e === 'email') ? "invalid" : ""))
             .form-control 
                 label(for="password") Password
-                input#password(type="password", name="password")
+                input#password(type="password", name="password", value=oldInput.password, class=validationErrors.find(e => e === 'password') ? "invalid" : "")
             .form-control 
                 label(for="confirmPassword") Confirm password 
-                input#confirmPassword(type="password", name="confirmPassword")
+                input#confirmPassword(type="password", name="confirmPassword", value=oldInput.confirmPassword, class=validationErrors.find(e => e === 'confirmPassword') ? "invalid" : "")
             +csrf-input(prod) 
             button.btn(type="submit") Signup
