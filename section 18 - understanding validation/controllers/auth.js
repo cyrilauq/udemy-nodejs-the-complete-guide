@@ -30,7 +30,12 @@ exports.getLogin = (req, res, next) => {
     res.render('auth/login', {
         path: '/login',
         pageTitle: 'Login',
-        errorMessage: message.length > 0 ? message[0] : null
+        errorMessage: message.length > 0 ? message[0] : null,
+        oldInput: {
+            email: "",
+            password: "",
+        },
+        validationErrors: []
     });
 };
 
@@ -38,6 +43,7 @@ exports.postLogin = async (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
     const errors = validationResult(req);
+    console.log(errors);
     const user = await User.findOne({ email: email });
     if(!errors.isEmpty()) {
         return res
@@ -45,7 +51,12 @@ exports.postLogin = async (req, res, next) => {
             .render('auth/login', {
                 path: '/login',
                 pageTitle: 'Login',
-                errorMessage: errors.array()[0].msg
+                errorMessage: errors.array()[0].msg,
+                oldInput: {
+                    email: email,
+                    password: password,
+                },
+                validationErrors: errors.array().map(e => e.path)
             }); // returns response that tells that the validation failed
     }
     req.session.userLoggedIn = true;

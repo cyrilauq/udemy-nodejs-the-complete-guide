@@ -6,19 +6,33 @@ block style
 
 block main
     main 
+        if(validationErrors && validationErrors.length > 0)
+            div.user-message.user-message--error One or more errors occured
         form.product-form(action=editing ? "/admin/edit-product" : "/admin/add-product", method="post")
             div.form-control
+                - const titleError = hasError ? validationErrors.find(e => e.field === 'title') : undefined;
                 label(for="title") Title 
-                input#title(type="text", name="title", value=editing ? prod.title : "")
+                input#title(type="text", name="title", value=editing || hasError ? prod.title : "", class=titleError ? "invalid" : "")
+                if(titleError)
+                    p.errorMessage= titleError.error
             div.form-control
+                - const imgError = hasError ? validationErrors.find(e => e.field === 'imageUrl') : undefined;
                 label(for="imageUrl") Image URL 
-                input#imageUrl(type="text", name="imageUrl", value=editing ? prod.imageUrl : "")
+                input#imageUrl(type="text", name="imageUrl", value=editing || hasError ? prod.imageUrl : "", class=imgError ? "invalid" : "")
+                if(imgError)
+                    p.errorMessage= imgError.error
             div.form-control
+                - const priceError = hasError ? validationErrors.find(e => e.field === 'price') : undefined;
                 label(for="price") Price 
-                input#price(type="number", name="price", step="0.01", value=editing ? prod.price : "")
+                input#price(type="number", name="price", step="0.01", value=editing || hasError ? prod.price : "", class=priceError ? "invalid" : "")
+                if(priceError)
+                    p.errorMessage= priceError.error
             div.form-control
+                - const descriptionError = hasError ? validationErrors.find(e => e.field === 'description') : undefined;
                 label(for="description") Description 
-                textarea#description(name="description", rows="5") #{ editing ? prod.description : "" }
+                textarea#description(name="description", rows="5", class=descriptionError ? "invalid" : "") #{ editing || hasError ? prod.description : "" }
+                if(descriptionError)
+                    p.errorMessage= descriptionError.error
             if editing
                 input(type="hidden", name="productId", value=prod._id)
             +csrf-input(prod) 

@@ -14,7 +14,7 @@ block main
                 input#name(type="name", name="name", value=oldInput.name, class=validationErrors.find(e => e === 'name') ? "invalid" : "")
             .form-control 
                 label(for="email") E-Mail 
-                input#email(type="email", name="email", value=oldInput.email, class=(validationErrors.find(e => e === 'email') ? "invalid" : ""))
+                input#email(type="email", name="email", value=oldInput.email, class=validationErrors.find(e => e === 'email') ? "invalid" : "")
             .form-control 
                 label(for="password") Password
                 input#password(type="password", name="password", value=oldInput.password, class=validationErrors.find(e => e === 'password') ? "invalid" : "")
