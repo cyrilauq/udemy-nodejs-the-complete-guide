@@ -11,6 +11,8 @@ const flash = require('connect-flash');
 
 const User = require('./models/user');
 
+const errorsHandler = require('./middlewares/errors-handler');
+
 const DB_URI = 'mongodb+srv://cyrilauquier:fxEuaAgIUUds6CMy@cluster0.6036lkk.mongodb.net/shop?retryWrites=true&w=majority';
 
 const app = express();
@@ -102,12 +104,7 @@ app.use(shopRoutes);
 app.use(authRoutes);
 app.use(errorRoutes);
 
-app.use((error, req, res, next) => {
-    if(error.httpStatusCode){
-        res.status(error.httpStatusCode).render(`${error.httpStatusCode}`);
-    }
-    res.status(500).render(`500`);
-});
+app.use(errorsHandler);
 
 mongoose.connect(DB_URI)
     .then(() => {
