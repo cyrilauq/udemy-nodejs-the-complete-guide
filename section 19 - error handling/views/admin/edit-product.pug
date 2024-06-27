@@ -8,6 +8,8 @@ block main
     main 
         if(validationErrors && validationErrors.length > 0)
             div.user-message.user-message--error One or more errors occured
+        if(errorMessage)
+            div.user-message.user-message--error {{ errorMessage }}
         form.product-form(action=editing ? "/admin/edit-product" : "/admin/add-product", method="post")
             div.form-control
                 - const titleError = hasError ? validationErrors.find(e => e.field === 'title') : undefined;

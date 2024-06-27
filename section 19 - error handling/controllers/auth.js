@@ -44,28 +44,34 @@ exports.postLogin = async (req, res, next) => {
     const password = req.body.password;
     const errors = validationResult(req);
     console.log(errors);
-    const user = await User.findOne({ email: email });
-    if(!errors.isEmpty()) {
-        return res
-            .status(422)
-            .render('auth/login', {
-                path: '/login',
-                pageTitle: 'Login',
-                errorMessage: errors.array()[0].msg,
-                oldInput: {
-                    email: email,
-                    password: password,
-                },
-                validationErrors: errors.array().map(e => e.path)
-            }); // returns response that tells that the validation failed
+    try {
+        const user = await User.findOne({ email: email });
+        if(!errors.isEmpty()) {
+            return res
+                .status(422)
+                .render('auth/login', {
+                    path: '/login',
+                    pageTitle: 'Login',
+                    errorMessage: errors.array()[0].msg,
+                    oldInput: {
+                        email: email,
+                        password: password,
+                    },
+                    validationErrors: errors.array().map(e => e.path)
+                }); // returns response that tells that the validation failed
+        }
+        req.session.userLoggedIn = true;
+        req.session.user = user;
+        // We call save mthod because, before redirecting the user we need to be sure that the information are in the session
+        return req.session.save(err => {
+            console.log(err);
+            res.redirect('/');
+        });
+    } catch(err) {
+        const error = new Error(err);
+        error.httpStatusCode = 500;
+        return next(error);
     }
-    req.session.userLoggedIn = true;
-    req.session.user = user;
-    // We call save mthod because, before redirecting the user we need to be sure that the information are in the session
-    return req.session.save(err => {
-        console.log(err);
-        res.redirect('/');
-    });
 };
 
 exports.postLogout = (req, res, next) => {
@@ -141,8 +147,10 @@ exports.postSignup = (req, res, next) => {
                 }
             });
         })
-        .catch(error => {
-            console.log(error);
+        .catch(err => {
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
         });
 };
 
@@ -199,8 +207,10 @@ exports.postResetPassword = (req, res, next) => {
                         });
                     });
             })
-            .catch(error => {
-                console.log(error);
+            .catch(err => {
+                const error = new Error(err);
+                error.httpStatusCode = 500;
+                return next(error);
             });
     });
 };
@@ -229,7 +239,11 @@ exports.getNewPassword = (req, res, next) => {
                 passwordToken: token
             });
         })
-        .catch();
+        .catch(err => {
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
+        });
 };
 
 exports.postNewPassword = (req, res, next) => {
@@ -281,7 +295,9 @@ exports.postNewPassword = (req, res, next) => {
                 }
             });
         })
-        .catch(error => {
-            console.log(error);
+        .catch(err => {
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
         });
 };

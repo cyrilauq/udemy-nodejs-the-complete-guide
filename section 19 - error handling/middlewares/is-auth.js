@@ -1,6 +1,6 @@
 module.exports = (req, res, next) => {
     if(!req.session.userLoggedIn) {
-        return res.status(403).render('403', { pageTitle: 'Forbiden access', path: '/403' });
+        return res.status(401).render('401', { pageTitle: 'Forbiden access', path: '/401' });
     }
     next();
 };

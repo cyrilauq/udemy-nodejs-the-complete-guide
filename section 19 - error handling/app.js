@@ -86,11 +86,14 @@ app.use((req, res, next) => {
     }
     User.findById(req.session.user._id)
         .then(user => {
+            if(!user) {
+                return next();
+            }
             req.user = user;
             next();
         })
         .catch(error => {
-            console.log(error);
+            next(new Error(error))
         });
 });
 
@@ -98,6 +101,13 @@ app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 app.use(authRoutes);
 app.use(errorRoutes);
+
+app.use((error, req, res, next) => {
+    if(error.httpStatusCode){
+        res.status(error.httpStatusCode).render(`${error.httpStatusCode}`);
+    }
+    res.status(500).render(`500`);
+});
 
 mongoose.connect(DB_URI)
     .then(() => {
