@@ -19,8 +19,8 @@ block main
                     p.errorMessage= titleError.error
             div.form-control
                 - const imgError = hasError ? validationErrors.find(e => e.field === 'imageUrl') : undefined;
-                label(for="imageUrl") Image URL 
-                input#imageUrl(type="text", name="imageUrl", value=editing || hasError ? prod.imageUrl : "", class=imgError ? "invalid" : "")
+                label(for="image") Image 
+                input#imageUrl(type="file", name="image", id="image")
                 if(imgError)
                     p.errorMessage= imgError.error
             div.form-control

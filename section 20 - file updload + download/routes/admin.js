@@ -27,12 +27,6 @@ router.post('/add-product',
             .isString()
             .withMessage("The field 'title' should be a valid string.")
             .trim(),
-        body('imageUrl')
-            .notEmpty()
-            .withMessage("The field 'imageUrl' should not be empty.")
-            .isURL()
-            .withMessage("The field 'imageUrl' should be a valid URL.")
-            .trim(),
         body('price')
             .notEmpty()
             .withMessage("The field 'price' should not be empty.")
